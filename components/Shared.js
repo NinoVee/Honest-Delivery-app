@@ -16,8 +16,6 @@ export function Header({ active }) {
     <div className="wb-header-bar">
       <div className="wb-header-inner">
         <div className="wb-logo">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.png" alt="Honest Care Medical Logistics" />
           <div className="wb-brandtext">
             <h1>
               Honest <span className="wb-care">Care</span>
