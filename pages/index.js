@@ -69,12 +69,12 @@ export default function DriverConsole() {
   }
 
   return (
-    <div className="wb-shell">
+    <>
       <Head>
         <title>Driver Console — Honest Care Medical Delivery</title>
       </Head>
       <Header active="driver" />
-
+      <div className="wb-shell">
       {screen === 'list' && (
         <OrderList
           orders={orders}
@@ -123,7 +123,8 @@ export default function DriverConsole() {
         Honest Care Medical Delivery &middot; driver console &middot; data persists in Upstash Redis &middot;
         emails send via Resend
       </div>
-    </div>
+      </div>
+    </>
   );
 }
 

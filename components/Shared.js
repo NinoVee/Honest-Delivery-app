@@ -13,8 +13,8 @@ export function fmtTime(iso) {
 
 export function Header({ active }) {
   return (
-    <>
-      <div className="wb-header">
+    <div className="wb-header-bar">
+      <div className="wb-header-inner">
         <div className="wb-logo">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/logo.png" alt="Honest Care Medical Logistics" />
@@ -25,16 +25,16 @@ export function Header({ active }) {
             <span className="wb-tag">Medical Delivery &middot; Delivering Care, Delivering Trust</span>
           </div>
         </div>
+        <div className="wb-tabs">
+          <Link href="/" className={`wb-tab ${active === 'driver' ? 'active' : ''}`}>
+            Driver Console
+          </Link>
+          <Link href="/track" className={`wb-tab ${active === 'client' ? 'active' : ''}`}>
+            Client Tracking
+          </Link>
+        </div>
       </div>
-      <div className="wb-tabs">
-        <Link href="/" className={`wb-tab ${active === 'driver' ? 'active' : ''}`}>
-          Driver Console
-        </Link>
-        <Link href="/track" className={`wb-tab ${active === 'client' ? 'active' : ''}`}>
-          Client Tracking
-        </Link>
-      </div>
-    </>
+    </div>
   );
 }
 

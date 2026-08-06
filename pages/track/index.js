@@ -14,11 +14,12 @@ export default function TrackEntry() {
   }
 
   return (
-    <div className="wb-shell">
+    <>
       <Head>
         <title>Track Your Delivery — Honest Care Medical Delivery</title>
       </Head>
       <Header active="client" />
+      <div className="wb-shell">
       <div className="wb-card">
         <h2>Track Your Delivery</h2>
         <div className="wb-note" style={{ marginBottom: 14 }}>
@@ -40,6 +41,7 @@ export default function TrackEntry() {
           </button>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

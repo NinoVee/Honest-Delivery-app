@@ -29,11 +29,12 @@ export default function TrackOrder() {
   }, [token]);
 
   return (
-    <div className="wb-shell">
+    <>
       <Head>
         <title>Delivery Status — Honest Care Medical Delivery</title>
       </Head>
       <Header active="client" />
+      <div className="wb-shell">
 
       {loading && <div className="wb-card wb-empty">Looking up your delivery&hellip;</div>}
 
@@ -77,6 +78,7 @@ export default function TrackOrder() {
           )}
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 }
