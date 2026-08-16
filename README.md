@@ -8,8 +8,8 @@ confirmation, built for **Honest Care Medical Delivery** — delivering care, de
 - **Client Tracking** (`/track` or `/track/[code]`) — client looks up a delivery by its tracking code
   (in production this is a link they'd get automatically by email)
 - Real email is sent via **Resend** with the signature and photos attached, when an order is completed
-- Data is stored in **Upstash Redis** so it persists across requests/deploys, unlike the earlier in-browser
-  prototype
+- Data is stored in **Redis** (Vercel's managed Redis storage) so it persists across requests/deploys,
+  unlike the earlier in-browser prototype
 
 ## Deploy to Vercel (for testing)
 
@@ -27,13 +27,10 @@ gh repo create honest-care-delivery --source=. --push
 Go to [vercel.com/new](https://vercel.com/new), import the GitHub repo. Framework preset ("Next.js")
 is auto-detected — no build config changes needed.
 
-### 3. Add storage: Upstash Redis
-In your Vercel project: **Storage → Create Database → Upstash Redis** (or **Marketplace → Upstash**).
-Connect it to this project — Vercel automatically sets the `UPSTASH_REDIS_REST_URL` and
-`UPSTASH_REDIS_REST_TOKEN` environment variables for you.
-
-(Alternative: create a free database directly at [upstash.com](https://upstash.com) and paste the
-REST URL/token into your Vercel project's Environment Variables manually.)
+### 3. Add storage: Redis
+In your Vercel project: **Storage → Create Database → Redis**. Once it's created, open the database and
+click **Connect to Project**, select this project, and leave all environments (Production/Preview/
+Development) checked. This automatically sets the `REDIS_URL` environment variable for you.
 
 ### 4. Add email: Resend
 1. Create a free account at [resend.com](https://resend.com) and copy an API key.
@@ -56,7 +53,7 @@ tracking at `https://your-app.vercel.app/track`.
 ## Local development
 ```bash
 npm install
-cp .env.example .env.local   # fill in your Upstash + Resend values
+cp .env.example .env.local   # fill in your Redis + Resend values
 npm run dev
 ```
 Open http://localhost:3000

@@ -3,8 +3,7 @@ import { getRedis } from '../../lib/redis';
 export default async function handler(req, res) {
   const result = {
     envVars: {
-      UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL ? 'set' : 'MISSING',
-      UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN ? 'set' : 'MISSING',
+      REDIS_URL: process.env.REDIS_URL ? 'set' : 'MISSING',
       RESEND_API_KEY: process.env.RESEND_API_KEY ? 'set' : 'MISSING',
       EMAIL_FROM: process.env.EMAIL_FROM || '(not set — defaults to onboarding@resend.dev)',
     },
