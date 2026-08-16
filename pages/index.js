@@ -120,8 +120,7 @@ export default function DriverConsole() {
 
       {toastMsg && <div className="wb-toast">{toastMsg}</div>}
       <div className="wb-shared-note">
-        Honest Care Medical Delivery &middot; driver console &middot; data persists in Upstash Redis &middot;
-        emails send via Resend
+        Honest Care, Delivering With Trust
       </div>
       </div>
     </>
