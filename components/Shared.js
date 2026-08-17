@@ -28,11 +28,11 @@ export function Header({ active }) {
           </div>
         </div>
         <div className="wb-tabs">
-          <Link href="/" className={`wb-tab ${active === 'driver' ? 'active' : ''}`}>
-            Driver Console
-          </Link>
-          <Link href="/track" className={`wb-tab ${active === 'client' ? 'active' : ''}`}>
+          <Link href="/" className={`wb-tab ${active === 'client' ? 'active' : ''}`}>
             Client Tracking
+          </Link>
+          <Link href="/driver" className={`wb-tab ${active === 'driver' ? 'active' : ''}`}>
+            Driver Console
           </Link>
         </div>
       </div>
