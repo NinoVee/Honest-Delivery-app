@@ -11,16 +11,20 @@ export function fmtTime(iso) {
   });
 }
 
+export function Footer() {
+  return <div className="wb-footer">Honest Care — Delivering With Trust.</div>;
+}
+
 export function Header({ active }) {
   return (
     <div className="wb-header-bar">
       <div className="wb-header-inner">
         <div className="wb-logo">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo-icon.png" alt="Honest Care Medical Logistics" />
           <div className="wb-brandtext">
-            <h1>
-              Honest <span className="wb-care">Care</span>
-            </h1>
-            <span className="wb-tag">Medical Delivery &middot; Delivering Care, Delivering Trust</span>
+            <h1>Honest Care</h1>
+            <span className="wb-tag">A secure way to log orders, with full transparency</span>
           </div>
         </div>
         <div className="wb-tabs">

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { Header, StatusRail, PodBlock } from '../../components/Shared';
+import { Header, Footer, StatusRail, PodBlock } from '../../components/Shared';
 
 export default function TrackOrder() {
   const router = useRouter();
@@ -79,6 +79,7 @@ export default function TrackOrder() {
         </div>
       )}
       </div>
+      <Footer />
     </>
   );
 }

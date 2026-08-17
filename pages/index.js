@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Head from 'next/head';
 import SignaturePad from '../components/SignaturePad';
-import { Header, StatusRail, PodBlock, EmailStatus } from '../components/Shared';
+import { Header, Footer, StatusRail, PodBlock, EmailStatus } from '../components/Shared';
 
 export default function DriverConsole() {
   const [screen, setScreen] = useState('list'); // list | new | detail | complete
@@ -119,10 +119,8 @@ export default function DriverConsole() {
       )}
 
       {toastMsg && <div className="wb-toast">{toastMsg}</div>}
-      <div className="wb-shared-note">
-        Honest Care, Delivering With Trust
       </div>
-      </div>
+      <Footer />
     </>
   );
 }

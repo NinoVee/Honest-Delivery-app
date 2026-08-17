@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { Header } from '../../components/Shared';
+import { Header, Footer } from '../../components/Shared';
 
 export default function TrackEntry() {
   const [code, setCode] = useState('');
@@ -42,6 +42,7 @@ export default function TrackEntry() {
         </div>
       </div>
       </div>
+      <Footer />
     </>
   );
 }
