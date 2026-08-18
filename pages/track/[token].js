@@ -57,10 +57,6 @@ export default function TrackOrder() {
           <hr className="wb-hr" />
           <div className="wb-grid">
             <div>
-              <label>Delivery address</label>
-              <div style={{ fontSize: 14 }}>{order.address}</div>
-            </div>
-            <div>
               <label>Items</label>
               <div style={{ fontSize: 14 }}>{order.items || '\u2014'}</div>
             </div>
@@ -72,8 +68,8 @@ export default function TrackOrder() {
             <PodBlock order={order} />
           ) : (
             <div className="wb-note">
-              We&rsquo;ll email {order.contactEmail} the moment this delivery is verified complete, with proof of
-              delivery attached.
+              You&rsquo;ll receive an email confirmation with proof of delivery the moment this order is verified
+              complete.
             </div>
           )}
         </div>

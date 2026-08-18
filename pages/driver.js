@@ -2,8 +2,17 @@ import { useEffect, useRef, useState } from 'react';
 import Head from 'next/head';
 import SignaturePad from '../components/SignaturePad';
 import { Header, Footer, StatusRail, PodBlock, EmailStatus } from '../components/Shared';
+import { getSession } from '../lib/auth';
 
-export default function DriverConsole() {
+export async function getServerSideProps({ req }) {
+  const session = getSession(req);
+  if (!session) {
+    return { redirect: { destination: '/login', permanent: false } };
+  }
+  return { props: { driverName: session.name } };
+}
+
+export default function DriverConsole({ driverName }) {
   const [screen, setScreen] = useState('list'); // list | new | detail | complete
   const [orders, setOrders] = useState([]);
   const [loadingList, setLoadingList] = useState(true);
@@ -75,6 +84,18 @@ export default function DriverConsole() {
       </Head>
       <Header active="driver" />
       <div className="wb-shell">
+      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 12, marginBottom: 14 }}>
+        <span className="wb-note">Signed in as <strong>{driverName}</strong></span>
+        <button
+          className="wb-btn outline small"
+          onClick={async () => {
+            await fetch('/api/logout', { method: 'POST' });
+            window.location.href = '/login';
+          }}
+        >
+          Sign out
+        </button>
+      </div>
       {screen === 'list' && (
         <OrderList
           orders={orders}
@@ -86,6 +107,7 @@ export default function DriverConsole() {
 
       {screen === 'new' && (
         <NewOrderForm
+          defaultDriverName={driverName}
           onCancel={() => setScreen('list')}
           onCreated={(order) => {
             setSelected(order);
@@ -154,10 +176,10 @@ function OrderList({ orders, loading, onNew, onOpen }) {
   );
 }
 
-function NewOrderForm({ onCancel, onCreated, toast }) {
+function NewOrderForm({ onCancel, onCreated, toast, defaultDriverName }) {
   const [form, setForm] = useState({
     facility: '',
-    driverName: '',
+    driverName: defaultDriverName || '',
     contactName: '',
     contactEmail: '',
     address: '',
@@ -235,11 +257,50 @@ function NewOrderForm({ onCancel, onCreated, toast }) {
   );
 }
 
+function PhoneIntakeDetails({ order }) {
+  const rows = [
+    ['Caller', order.callerName],
+    ['Callback number', order.callerPhone],
+    ['Account number', order.accountNumber],
+    ['Pickup facility', order.pickupFacility],
+    ['Pickup address', order.pickupAddress],
+    ['Pickup contact', [order.pickupContactName, order.pickupContactPhone].filter(Boolean).join(' \u00b7 ')],
+    ['Service type', order.serviceType],
+    ['Ready time', order.readyTime],
+    ['Delivery deadline', order.deadline],
+    ['Temperature', order.tempRequirement],
+    ['Vehicle requirement', order.vehicleRequirement],
+    ['Chain of custody', order.chainOfCustody ? 'Required' : null],
+    ['PO / reference #', order.poNumber],
+    ['SMS updates', order.smsOptIn ? 'Opted in' : null],
+    ['Pickup notes', order.specialInstructionsPickup],
+    ['Delivery notes', order.specialInstructionsDelivery],
+  ].filter(([, value]) => value);
+
+  if (rows.length === 0) return null;
+
+  return (
+    <>
+      <hr className="wb-hr" />
+      <h3>Phone intake details</h3>
+      <div className="wb-grid">
+        {rows.map(([label, value]) => (
+          <div key={label}>
+            <label>{label}</label>
+            <div style={{ fontSize: 14 }}>{value}</div>
+          </div>
+        ))}
+      </div>
+    </>
+  );
+}
+
 function OrderDetail({ order, justCreated, onBack, onAdvance, onComplete }) {
   const nextAction = {
     pending: { key: 'in_transit', label: 'Start: Mark In Transit', cls: 'amber' },
     in_transit: { key: 'onsite', label: 'Mark Onsite', cls: 'blue' },
   }[order.status];
+  const isPhoneOrder = order.source === 'phone_agent';
 
   return (
     <>
@@ -259,19 +320,29 @@ function OrderDetail({ order, justCreated, onBack, onAdvance, onComplete }) {
             </div>
           </div>
         )}
+        {order.status === 'pending_review' && (
+          <div className="wb-banner" style={{ background: 'var(--amber-soft)', border: '1px solid var(--amber)' }}>
+            <div style={{ fontWeight: 600, marginBottom: 4 }}>Awaiting dispatcher review</div>
+            <div className="wb-note">
+              This order came in through the phone dispatch agent. Review the details below, then approve it to
+              release it into the normal driver workflow.
+            </div>
+          </div>
+        )}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 10 }}>
           <div>
             <h2 style={{ marginBottom: 2 }}>{order.facility}</h2>
             <div className="wb-oid">
               {order.id} &middot; tracking {order.trackingCode}
+              {isPhoneOrder && <> &middot; via phone agent</>}
             </div>
           </div>
-          <span className={`wb-badge ${order.status}`}>{order.status.replace('_', ' ')}</span>
+          <span className={`wb-badge ${order.status}`}>{order.status.replace(/_/g, ' ')}</span>
         </div>
         <hr className="wb-hr" />
         <div className="wb-grid">
           <div>
-            <label>Address</label>
+            <label>{isPhoneOrder ? 'Delivery address' : 'Address'}</label>
             <div style={{ fontSize: 14 }}>{order.address}</div>
           </div>
           <div>
@@ -288,9 +359,16 @@ function OrderDetail({ order, justCreated, onBack, onAdvance, onComplete }) {
           </div>
         </div>
 
+        {isPhoneOrder && <PhoneIntakeDetails order={order} />}
+
         <StatusRail order={order} />
 
-        {order.status !== 'completed' &&
+        {order.status === 'pending_review' && (
+          <button className="wb-btn teal" onClick={() => onAdvance('pending')}>
+            Approve Order
+          </button>
+        )}
+        {order.status !== 'completed' && order.status !== 'pending_review' && order.status !== 'cancelled' &&
           (order.status === 'onsite' ? (
             <button className="wb-btn teal" onClick={onComplete}>
               Complete Delivery

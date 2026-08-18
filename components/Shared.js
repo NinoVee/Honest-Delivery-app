@@ -46,7 +46,7 @@ export function StatusRail({ order }) {
     { key: 'onsite', label: 'Onsite' },
     { key: 'completed', label: 'Completed' },
   ];
-  const rank = { pending: -1, in_transit: 0, onsite: 1, completed: 2 };
+  const rank = { pending_review: -1, pending: -1, in_transit: 0, onsite: 1, completed: 2, cancelled: -1 };
   const currentRank = rank[order.status];
   return (
     <div className="wb-rail">

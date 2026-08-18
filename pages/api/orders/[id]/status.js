@@ -1,8 +1,14 @@
 import { getOrder, saveOrder } from '../../../../lib/orders';
+import { getSession } from '../../../../lib/auth';
 
-const ALLOWED = ['in_transit', 'onsite'];
+// 'pending' is included so a dispatcher can approve a phone-agent order
+// (status pending_review -> pending) to release it into the normal driver workflow.
+const ALLOWED = ['pending', 'in_transit', 'onsite'];
 
 export default async function handler(req, res) {
+  if (!getSession(req)) {
+    return res.status(401).json({ error: 'Not signed in.' });
+  }
   if (req.method !== 'POST') {
     res.setHeader('Allow', ['POST']);
     return res.status(405).end();

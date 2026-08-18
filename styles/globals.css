@@ -83,9 +83,11 @@ textarea{resize:vertical;min-height:64px;}
 
 .wb-badge{display:inline-block;font-family:'IBM Plex Mono';font-size:12px;text-transform:uppercase;letter-spacing:.05em;padding:4px 10px;border-radius:20px;font-weight:600;}
 .wb-badge.pending{background:var(--line);color:var(--ink-soft);}
+.wb-badge.pending_review{background:var(--amber-soft);color:var(--amber);}
 .wb-badge.in_transit{background:var(--amber-soft);color:var(--amber);}
 .wb-badge.onsite{background:var(--blue-soft);color:var(--blue);}
 .wb-badge.completed{background:var(--teal-soft);color:var(--teal);}
+.wb-badge.cancelled{background:var(--danger-soft);color:var(--danger);}
 
 .wb-order-row{display:flex;align-items:center;justify-content:space-between;padding:15px 4px;border-bottom:1px solid var(--line);cursor:pointer;}
 .wb-order-row:last-child{border-bottom:none;}

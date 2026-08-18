@@ -1,5 +1,6 @@
 import { getOrder, saveOrder } from '../../../../lib/orders';
 import { sendCompletionEmail } from '../../../../lib/email';
+import { getSession } from '../../../../lib/auth';
 
 // Signature + photo base64 payloads can be a few MB — raise the default 1mb body limit.
 export const config = {
@@ -11,6 +12,9 @@ export const config = {
 };
 
 export default async function handler(req, res) {
+  if (!getSession(req)) {
+    return res.status(401).json({ error: 'Not signed in.' });
+  }
   if (req.method !== 'POST') {
     res.setHeader('Allow', ['POST']);
     return res.status(405).end();
@@ -20,6 +24,7 @@ export default async function handler(req, res) {
   if (!signature) {
     return res.status(400).json({ error: 'A recipient signature is required to complete delivery' });
   }
+  const session = getSession(req);
 
   try {
     const order = await getOrder(id);
@@ -33,7 +38,7 @@ export default async function handler(req, res) {
       signature,
       photos: Array.isArray(photos) ? photos.slice(0, 6) : [],
       completedAt: now,
-      driverName: order.driverName || 'Driver',
+      driverName: order.driverName || session?.name || 'Driver',
       notes: notes || '',
     };
 

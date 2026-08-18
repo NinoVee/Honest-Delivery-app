@@ -1,0 +1,180 @@
+{
+  "_readme": [
+    "This is a REFERENCE document, not an auto-import file — as of this writing, Retell's",
+    "dashboard requires each custom function to be added manually (Agent > Tools > + Add >",
+    "Custom Function). Use the fields below to fill in each one. Replace",
+    "https://your-app.vercel.app with your actual deployed domain everywhere it appears.",
+    "",
+    "For every function: set Method = POST, and set 'Payload: args only' = ON in the Retell",
+    "dashboard so the JSON body is just the arguments (these endpoints also work if it's OFF,",
+    "since they check for an 'args' wrapper either way — but ON matches the parameter shapes",
+    "shown here exactly).",
+    "",
+    "Every request to these URLs must carry a valid X-Retell-Signature header — Retell adds",
+    "this automatically. The endpoints reject anything else with 401."
+  ],
+
+  "functions": [
+    {
+      "name": "verify_client",
+      "description": "Verifies a caller's identity/account before disclosing any order details. Call this before checking order status, and before discussing anything about an existing order.",
+      "url": "https://your-app.vercel.app/api/voice/tools/verify-client",
+      "method": "POST",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "phone_number": { "type": "string", "description": "Caller's phone number, as spoken or from caller ID." },
+          "facility_name": { "type": "string", "description": "Facility or account name the caller gives, if any." },
+          "account_number": { "type": "string", "description": "Account number the caller gives, if any." }
+        },
+        "required": ["phone_number"]
+      }
+    },
+    {
+      "name": "validate_address",
+      "description": "Validates a street address before it is used for pickup or delivery. Call once for the pickup address and once for the delivery address.",
+      "url": "https://your-app.vercel.app/api/voice/tools/validate-address",
+      "method": "POST",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "address": { "type": "string", "description": "Full street address including city, state, and zip if given." }
+        },
+        "required": ["address"]
+      }
+    },
+    {
+      "name": "calculate_route",
+      "description": "Gets a rough estimated time window between a validated pickup and delivery address. Share the result only as an estimate, never a guaranteed time.",
+      "url": "https://your-app.vercel.app/api/voice/tools/calculate-route",
+      "method": "POST",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "pickup_address": { "type": "string" },
+          "delivery_address": { "type": "string" }
+        },
+        "required": ["pickup_address", "delivery_address"]
+      }
+    },
+    {
+      "name": "create_pending_order",
+      "description": "Submits a new pickup order for dispatcher review. Only call this after reading the full order summary back to the caller and receiving an explicit yes — caller_confirmed must be true.",
+      "url": "https://your-app.vercel.app/api/voice/tools/create-pending-order",
+      "method": "POST",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "caller_confirmed": { "type": "boolean", "description": "Must be true — only set after the caller explicitly confirms the read-back summary." },
+          "facility_name": { "type": "string", "description": "The client/account facility name (step 1 of intake)." },
+          "account_number": { "type": "string" },
+          "caller_name": { "type": "string" },
+          "caller_phone": { "type": "string" },
+          "pickup_facility": { "type": "string" },
+          "pickup_address": { "type": "string" },
+          "pickup_contact_name": { "type": "string" },
+          "pickup_contact_phone": { "type": "string" },
+          "delivery_facility": { "type": "string" },
+          "delivery_address": { "type": "string" },
+          "delivery_contact_name": { "type": "string" },
+          "delivery_contact_phone": { "type": "string" },
+          "delivery_contact_email": { "type": "string", "description": "Optional — caller often won't have this handy; dispatcher can add it on review." },
+          "service_type": { "type": "string", "enum": ["routine", "scheduled", "same_day", "stat"] },
+          "ready_time": { "type": "string", "description": "When the package will be ready for pickup, as the caller describes it." },
+          "delivery_deadline": { "type": "string", "description": "Required delivery deadline, as the caller describes it." },
+          "package_count": { "type": "string" },
+          "package_type": { "type": "string" },
+          "temperature_requirement": { "type": "string", "enum": ["room_temperature", "refrigerated", "frozen", "other"] },
+          "vehicle_requirement": { "type": "string" },
+          "chain_of_custody_required": { "type": "boolean" },
+          "pickup_instructions": { "type": "string" },
+          "delivery_instructions": { "type": "string" },
+          "po_number": { "type": "string" },
+          "sms_updates_authorized": { "type": "boolean" }
+        },
+        "required": [
+          "caller_confirmed",
+          "facility_name",
+          "caller_name",
+          "caller_phone",
+          "pickup_facility",
+          "pickup_address",
+          "pickup_contact_name",
+          "pickup_contact_phone",
+          "delivery_facility",
+          "delivery_address",
+          "delivery_contact_name",
+          "delivery_contact_phone",
+          "service_type"
+        ]
+      }
+    },
+    {
+      "name": "get_order_status",
+      "description": "Looks up an existing order after the caller has been verified. Only share status, driver first name, estimated times, pickup/delivery confirmation, and proof-of-delivery status — nothing else.",
+      "url": "https://your-app.vercel.app/api/voice/tools/get-order-status",
+      "method": "POST",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "order_id": { "type": "string", "description": "Order ID or reference number, if the caller has it." },
+          "tracking_code": { "type": "string" },
+          "caller_phone": { "type": "string", "description": "Used as a fallback lookup if no order ID is given." },
+          "pickup_facility": { "type": "string" },
+          "delivery_facility": { "type": "string" }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "cancel_order",
+      "description": "Cancels an order that has not yet been picked up. Only use for a straightforward cancellation — for any other change, use request_human_transfer instead.",
+      "url": "https://your-app.vercel.app/api/voice/tools/cancel-order",
+      "method": "POST",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "order_id": { "type": "string" }
+        },
+        "required": ["order_id"]
+      }
+    },
+    {
+      "name": "request_human_transfer",
+      "description": "Transfers the call to a human dispatcher. Call this immediately, without trying to resolve the situation yourself, whenever the transfer conditions in the system prompt are met.",
+      "url": "https://your-app.vercel.app/api/voice/tools/request-human-transfer",
+      "method": "POST",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "enum": [
+              "caller_requested",
+              "confused_or_distressed",
+              "pricing_dispute",
+              "restricted_materials",
+              "address_not_validated",
+              "account_not_verified",
+              "unsupported_service",
+              "conflicting_instructions",
+              "missing_or_damaged_package",
+              "urgent_no_driver_info",
+              "repeated_misunderstanding",
+              "other"
+            ]
+          },
+          "context": { "type": "string", "description": "One sentence of context for the dispatcher picking up." },
+          "caller_phone": { "type": "string" }
+        },
+        "required": ["reason"]
+      },
+      "_note": "This endpoint only LOGS the transfer request for dispatcher follow-up. The actual live phone transfer is a separate Retell dashboard feature — pair this custom function with Retell's built-in 'Transfer Call' node/action and point it at your dispatcher's real phone number, so the call itself actually moves, not just the log entry."
+    }
+  ],
+
+  "env_vars_required": {
+    "RETELL_API_KEY": "From Retell dashboard > API Keys. Must be a key with the 'webhook' badge — used to verify the X-Retell-Signature header on every request above.",
+    "ADMIN_API_KEY": "A secret you choose. Protects /api/admin/clients, used to register verified client accounts (phone, facility name, account number) that verify_client checks against."
+  }
+}

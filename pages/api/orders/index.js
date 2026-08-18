@@ -1,6 +1,11 @@
 import { listOrders, saveOrder, addOrderToIndex, setTrackingToken, genCode } from '../../../lib/orders';
+import { getSession } from '../../../lib/auth';
 
 export default async function handler(req, res) {
+  if (!getSession(req)) {
+    return res.status(401).json({ error: 'Not signed in.' });
+  }
+
   if (req.method === 'GET') {
     try {
       const orders = await listOrders();
