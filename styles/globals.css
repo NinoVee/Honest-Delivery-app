@@ -62,12 +62,18 @@ body{
 @media(max-width:600px){.wb-grid{grid-template-columns:1fr;}}
 
 label{display:block;font-size:13px;font-weight:700;color:var(--ink);margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em;}
-input[type=text],input[type=email],textarea{
+input[type=text],input[type=email],input[type=password],textarea{
   width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:var(--radius);
   font-family:'IBM Plex Sans';font-size:15.5px;background:#fff;color:var(--ink);margin-bottom:16px;
+  box-sizing:border-box;
 }
 input:focus,textarea:focus,button:focus{outline:2px solid var(--blue);outline-offset:1px;}
 textarea{resize:vertical;min-height:64px;}
+
+.wb-login-card{padding:32px;}
+.wb-login-card input.wb-input-lg{
+  padding:15px 16px;font-size:17px;border-radius:6px;
+}
 
 .wb-btn{
   font-family:'IBM Plex Sans';font-weight:600;font-size:14.5px;padding:11px 20px;border-radius:var(--radius);

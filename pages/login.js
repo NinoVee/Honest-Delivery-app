@@ -44,12 +44,13 @@ export default function Login() {
       </Head>
       <Header active="driver" />
       <div className="wb-shell">
-        <div className="wb-card" style={{ maxWidth: 420, margin: '0 auto' }}>
+        <div className="wb-card wb-login-card" style={{ maxWidth: 420, margin: '0 auto' }}>
           <h2>Driver Sign In</h2>
           <form onSubmit={submit}>
             <label>Your name</label>
             <input
               type="text"
+              className="wb-input-lg"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. John T"
@@ -58,6 +59,7 @@ export default function Login() {
             <label>Password</label>
             <input
               type="password"
+              className="wb-input-lg"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Team password"
