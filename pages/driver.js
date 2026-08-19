@@ -85,9 +85,11 @@ export default function DriverConsole({ driverName }) {
       <Header active="driver" />
       <div className="wb-shell">
       <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 12, marginBottom: 14 }}>
-        <span className="wb-note">Signed in as <strong>{driverName}</strong></span>
+        <span className="wb-note" style={{ color: '#fff' }}>
+          Signed in as <strong>{driverName}</strong>
+        </span>
         <button
-          className="wb-btn outline small"
+          className="wb-btn outline small wb-btn-on-dark"
           onClick={async () => {
             await fetch('/api/logout', { method: 'POST' });
             window.location.href = '/login';

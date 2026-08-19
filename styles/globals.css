@@ -82,6 +82,8 @@ textarea{resize:vertical;min-height:64px;}
 .wb-btn:hover{opacity:.88;}
 .wb-btn:disabled{opacity:.4;cursor:not-allowed;}
 .wb-btn.outline{background:transparent;color:var(--ink);}
+.wb-btn-on-dark{color:#fff !important;border-color:rgba(255,255,255,.55) !important;}
+.wb-btn-on-dark:hover{border-color:#fff !important;}
 .wb-btn.teal{background:var(--teal);border-color:var(--teal);}
 .wb-btn.blue{background:var(--blue);border-color:var(--blue);}
 .wb-btn.amber{background:var(--amber);border-color:var(--amber);}
