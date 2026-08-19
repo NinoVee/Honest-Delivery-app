@@ -53,6 +53,7 @@ export default async function handler(req, res) {
 
     order.emailLog = order.emailLog || [];
     order.emailLog.push({
+      type: 'completed',
       to: order.contactEmail,
       subject: `Honest Care Medical Delivery — Order ${order.id} completed`,
       sentAt: now,

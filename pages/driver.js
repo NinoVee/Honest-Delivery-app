@@ -205,6 +205,11 @@ function NewOrderForm({ onCancel, onCreated, toast, defaultDriverName }) {
       });
       const data = await r.json();
       if (r.ok) {
+        if (data.email && data.email.sent) {
+          toast(`Order created. Tracking number emailed to ${data.order.contactEmail}.`);
+        } else {
+          toast('Order created, but the tracking email failed to send (see order details).');
+        }
         onCreated(data.order);
       } else {
         toast(data.error || 'Could not create order');

@@ -1,5 +1,6 @@
 import { listOrders, saveOrder, addOrderToIndex, setTrackingToken, genCode } from '../../../lib/orders';
 import { getSession } from '../../../lib/auth';
+import { sendOrderCreatedEmail } from '../../../lib/email';
 
 export default async function handler(req, res) {
   if (!getSession(req)) {
@@ -24,6 +25,7 @@ export default async function handler(req, res) {
       }
       const id = genCode('ORD', 6);
       const trackingCode = genCode('TRK', 8);
+      const now = new Date().toISOString();
       const order = {
         id,
         trackingCode,
@@ -34,7 +36,7 @@ export default async function handler(req, res) {
         address,
         items: items || '',
         status: 'pending',
-        createdAt: new Date().toISOString(),
+        createdAt: now,
         history: [],
         pod: null,
         emailLog: [],
@@ -42,7 +44,29 @@ export default async function handler(req, res) {
       await saveOrder(order);
       await addOrderToIndex(id);
       await setTrackingToken(trackingCode, id);
-      return res.status(201).json({ order });
+
+      // Send the "order scheduled / here's your tracking number" email right away.
+      // A failure here shouldn't fail order creation — the order still exists and the
+      // dispatcher can see in the driver console that this first email didn't go out.
+      const emailResult = { sent: false, error: null };
+      try {
+        await sendOrderCreatedEmail(order);
+        emailResult.sent = true;
+      } catch (e) {
+        console.error('Order-created email failed:', e.message);
+        emailResult.error = e.message;
+      }
+      order.emailLog.push({
+        type: 'order_created',
+        to: order.contactEmail,
+        subject: `Honest Care Medical Delivery — Order ${order.id} scheduled (tracking #${order.trackingCode})`,
+        sentAt: now,
+        success: emailResult.sent,
+        error: emailResult.error,
+      });
+      await saveOrder(order);
+
+      return res.status(201).json({ order, email: emailResult });
     } catch (e) {
       console.error(e);
       return res.status(500).json({ error: `Failed to create order: ${e.message}` });

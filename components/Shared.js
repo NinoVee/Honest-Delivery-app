@@ -123,21 +123,23 @@ export function PodBlock({ order }) {
 
 export function EmailStatus({ order }) {
   if (!order.emailLog || order.emailLog.length === 0) return null;
-  const last = order.emailLog[order.emailLog.length - 1];
   return (
     <>
       <hr className="wb-hr" />
-      <h3>Client notification</h3>
-      {last.success ? (
-        <div className="wb-banner success">
-          Email sent to <strong>{last.to}</strong> at {fmtTime(last.sentAt)} with the POD attached.
-        </div>
-      ) : (
-        <div className="wb-banner error">
-          Delivery was completed, but the email failed to send ({last.error || 'unknown error'}). Check your
-          RESEND_API_KEY and EMAIL_FROM environment variables.
-        </div>
-      )}
+      <h3>Client notifications</h3>
+      {order.emailLog.map((log, i) => {
+        const label = log.type === 'order_created' ? 'Order scheduled email' : 'Delivery completed email';
+        return log.success ? (
+          <div className="wb-banner success" key={i} style={{ marginBottom: i === order.emailLog.length - 1 ? 0 : 8 }}>
+            <strong>{label}</strong> sent to {log.to} at {fmtTime(log.sentAt)}.
+          </div>
+        ) : (
+          <div className="wb-banner error" key={i} style={{ marginBottom: i === order.emailLog.length - 1 ? 0 : 8 }}>
+            <strong>{label}</strong> failed to send ({log.error || 'unknown error'}). Check your RESEND_API_KEY and
+            EMAIL_FROM environment variables.
+          </div>
+        );
+      })}
     </>
   );
 }
